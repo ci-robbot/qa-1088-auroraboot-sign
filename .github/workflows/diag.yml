@@ -1,0 +1,11 @@
+name: diag
+on: { push: { branches: [diag] } }
+jobs:
+  dns:
+    strategy: { matrix: { os: [ubuntu-26.04, ubuntu-24.04] } }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: |
+          cat /etc/resolv.conf; resolvectl status | head -20 || true
+          for h in archive.ubuntu.com security.ubuntu.com ports.ubuntu.com azure.archive.ubuntu.com github.com proxy.golang.org; do echo "$h: $(getent hosts $h || echo FAIL)"; done
+          sudo apt-get update 2>&1 | tail -3
