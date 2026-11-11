@@ -40,6 +40,13 @@ jobs:
 
       # libpcsclite is linked through cgo, so the arm64 cross build needs
       # the arm64 dev package from ubuntu-ports next to the cross compiler.
+      - name: QA workaround - resolve Ubuntu archive hosts (runner DNS outage 2026-11-11)
+        run: |
+          for h in archive.ubuntu.com security.ubuntu.com ports.ubuntu.com azure.archive.ubuntu.com; do
+            ip=$(dig @1.1.1.1 +short A "$h" | grep -E "^[0-9.]+$" | head -1)
+            echo "$ip $h" | sudo tee -a /etc/hosts
+          done
+
       - name: Install cross toolchain and libpcsclite
         run: |
           set -euo pipefail
